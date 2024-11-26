@@ -1,6 +1,7 @@
 const { time } = require('console')
 const express = require('express')
 const app = express()
+const os = require('os');
 
 // Socket.io setup
 const http = require('http')
@@ -46,9 +47,23 @@ io.on('connection', (socket) => {
     console.log(players)
 })
 
+// Function to get the server's local IP
+function getLocalIp() {
+    const networkInterfaces = os.networkInterfaces();
+    for (const interfaceName in networkInterfaces) {
+      const networkInterface = networkInterfaces[interfaceName];
+      for (const iface of networkInterface) {
+        if (iface.family === 'IPv4' && !iface.internal) {
+          return iface.address; // Return the first non-internal IPv4 address
+        }
+      }
+    }
+    return 'localhost';
+  }
 
 server.listen(port, '0.0.0.0', () => {
-  console.log(`Example app listening on port ${port}`)
+    const localIp = getLocalIp();
+    console.log(`Example app listening on http://${localIp}:${port}`)
 })
 
 console.log('Server loaded')
